@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block title %}Help{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="text-center mb-10 animate__animated animate__fadeIn">
+  <h2 class="text-5xl font-extrabold text-green-700 mb-4">
+    Help & FAQs
+  </h2>
+  <p class="text-gray-700 text-lg max-w-2xl mx-auto">
+    Welcome to the Job Portal Help Center. Find answers to common questions and guidance on how to use the platform.
+  </p>
+</div>
+
+<!-- Help Content -->
+<div class="max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-8 animate__animated animate__fadeInUp">
+  {% if current_user.is_authenticated %}
+      {% if current_user.usertype == 'Job_Seeker' %}
+          <h3 class="text-2xl font-bold text-green-700 mb-4">
+            For Job Seekers
+          </h3>
+          <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-200 text-sm">
+              <li><strong class="text-green-700">Browse Jobs:</strong> Visit the homepage or dashboard to see open positions.</li>
+              <li><strong class="text-green-700">Apply:</strong> Click "Apply" on a job, fill in details (gender, experience, degree, etc.), upload your resume, and submit.</li>
+              <li><strong class="text-green-700">Track Applications:</strong> View your application history on your profile page (if available).</li>
+              <li><strong class="text-green-700">Edit Profile:</strong> Update your contact or personal info via the Profile section.</li>
+          </ul>
+      {% elif current_user.usertype == 'Company' %}
+          <h3 class="text-2xl font-bold text-green-700 mb-4">
+            For Employers
+          </h3>
+          <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-200 text-sm">
+              <li><strong class="text-green-700">Post Jobs:</strong> Use the "Post a Job" button to add new openings with details like title, requirements, and salary.</li>
+              <li><strong class="text-green-700">Manage Listings:</strong> View, edit, or delete your job listings from the dashboard.</li>
+              <li><strong class="text-green-700">View Applications:</strong> Click "View Applications" to review candidate details and resumes.</li>
+              <li><strong class="text-green-700">Edit Profile:</strong> Update your organization’s contact and profile information.</li>
+          </ul>
+      {% endif %}
+  {% else %}
+      <h3 class="text-2xl font-bold text-green-700 mb-4">
+        Getting Started
+      </h3>
+      <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-200 text-sm">
+          <li><strong class="text-green-700">Register:</strong> Sign up as a Job Seeker or Employer to access the platform's full features.</li>
+          <li><strong class="text-green-700">Explore Jobs:</strong> Browse the listings, but note that applying requires an account.</li>
+          <li><strong class="text-green-700">Support:</strong> Visit the <a href="{{ url_for('contact') }}" class="text-green-600 underline">Contact</a> page to get help.</li>
+      </ul>
+  {% endif %}
+
+  <div class="border-t mt-8 pt-6 text-gray-600 dark:text-gray-300 text-center">
+    Still need help? <a href="{{ url_for('contact') }}" class="text-green-700 font-semibold hover:underline">Contact our support team</a>.
+  </div>
+</div>
+
+{% endblock %}

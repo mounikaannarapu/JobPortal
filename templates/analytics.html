@@ -1,0 +1,245 @@
+{% extends "layout.html" %}
+{% block title %}Dashboard - Analytics{% endblock %}
+
+{% block content %}
+
+<h2 class="text-4xl font-extrabold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-emerald-500 flex items-center gap-3 animate__animated animate__fadeIn">
+  Analytics Overview
+</h2>
+
+{% if usertype == 'Job_Seeker' %}
+  <div class="mb-8 max-w-3xl">
+    <h4 class="text-2xl font-semibold mb-3">
+      Total Applications Submitted: 
+      <span class="text-green-700 font-bold ml-2">{{ total_applications }}</span>
+    </h4>
+    <ul class="list-disc list-inside text-gray-700 dark:text-gray-300">
+      {% for job_title, job_industry, applied_on in applications %}
+        <li class="mb-1">
+          <strong class="text-green-600">{{ job_title }}</strong>
+          in <em>{{ job_industry }}</em> — 
+          <span class="text-sm text-gray-500">{{ applied_on }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-8 max-w-5xl">
+    <section>
+      <h5 class="text-xl font-semibold mb-4 text-emerald-700 flex items-center gap-2">📈 Application Timeline</h5>
+      <div class="bg-white rounded-2xl shadow p-6">
+        <canvas id="applicationTimelineChart" class="w-full h-72"></canvas>
+      </div>
+    </section>
+
+    <section>
+      <h5 class="text-xl font-semibold mb-4 text-green-700 flex items-center gap-2">💼 Most Applied Industries</h5>
+      <div class="bg-white rounded-2xl shadow p-6">
+        <canvas id="industryDistributionChart" class="w-full h-72"></canvas>
+      </div>
+    </section>
+  </div>
+
+{% elif usertype == 'Company' %}
+  <div class="mb-8 max-w-3xl">
+    <h4 class="text-2xl font-semibold mb-2 text-green-700 flex items-center gap-2"> Jobs Posted: 
+      <span class="text-green-600 font-bold ml-2">{{ total_jobs }}</span>
+    </h4>
+    <h4 class="text-2xl font-semibold text-emerald-700 flex items-center gap-2"> Applications Received: 
+      <span class="text-emerald-600 font-bold ml-2">{{ total_applications }}</span>
+    </h4>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-8 max-w-5xl">
+    <section>
+      <h5 class="text-xl font-semibold mb-4 text-green-700 flex items-center gap-2">📊 Applications by Job</h5>
+      <div class="bg-white rounded-2xl shadow p-6">
+        <canvas id="applicationsPerJobChart" class="w-full h-72"></canvas>
+      </div>
+    </section>
+
+    <section>
+      <h5 class="text-xl font-semibold mb-4 text-emerald-700 flex items-center gap-2">📅 Job Posting Timeline</h5>
+      <div class="bg-white rounded-2xl shadow p-6">
+        <canvas id="jobPostingTimelineChart" class="w-full h-72"></canvas>
+      </div>
+    </section>
+  </div>
+{% endif %}
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Chart Configuration (unchanged) -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const role = "{{ usertype }}";
+
+  {% if usertype == 'Job_Seeker' %}
+    const applicationDates = {{ dates|tojson }};
+    const appliedIndustries = {{ industries|tojson }};
+
+    const applicationsByDate = applicationDates.reduce((acc, d) => {
+      acc[d] = (acc[d] || 0) + 1;
+      return acc;
+    }, {});
+
+    new Chart(document.getElementById('applicationTimelineChart'), {
+      type: 'line',
+      data: {
+        labels: Object.keys(applicationsByDate),
+        datasets: [{
+          label: 'Applications Over Time',
+          data: Object.values(applicationsByDate),
+          borderColor: '#2563eb',
+          backgroundColor: 'rgba(37, 99, 235, 0.3)',
+          fill: true,
+          tension: 0.3,
+          borderWidth: 3,
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          pointBackgroundColor: '#1e40af',
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: { duration: 1200, easing: 'easeOutQuart' },
+        plugins: {
+          legend: { display: true, labels: { font: { size: 14 }, color: '#1e40af' } },
+          tooltip: { enabled: true, mode: 'nearest', intersect: false }
+        },
+        scales: {
+          x: { 
+            title: { display: true, text: 'Date', font: { size: 16, weight: 'bold' }, color: '#374151' },
+            ticks: { font: { size: 12 }, color: '#4b5563', maxRotation: 45, minRotation: 30 },
+            grid: { display: false }
+          },
+          y: { 
+            beginAtZero: true,
+            title: { display: true, text: 'Applications', font: { size: 16, weight: 'bold' }, color: '#374151' },
+            ticks: { font: { size: 12 }, color: '#4b5563', stepSize: 1 },
+            grid: { color: '#e5e7eb' }
+          }
+        }
+      }
+    });
+
+    const industryCounts = appliedIndustries.reduce((acc, industry) => {
+      acc[industry] = (acc[industry] || 0) + 1;
+      return acc;
+    }, {});
+
+    new Chart(document.getElementById('industryDistributionChart'), {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(industryCounts),
+        datasets: [{
+          data: Object.values(industryCounts),
+          backgroundColor: [
+            '#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#0ea5e9', '#f97316',
+          ],
+          borderColor: '#fff',
+          borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: { animateScale: true, animateRotate: true },
+        plugins: {
+          legend: { position: 'right', labels: { font: { size: 14 }, color: '#374151' } },
+          tooltip: { enabled: true }
+        }
+      }
+    });
+
+  {% elif usertype == 'Company' %}
+    const jobStats = {{ applications_data|tojson }};
+    const postingDates = {{ post_dates|tojson }};
+
+    const jobNames = jobStats.map(item => item.title);
+    const applicationCounts = jobStats.map(item => item.count);
+
+    new Chart(document.getElementById('applicationsPerJobChart'), {
+      type: 'bar',
+      data: {
+        labels: jobNames,
+        datasets: [{
+          label: 'Applications per Job',
+          data: applicationCounts,
+          backgroundColor: '#8b5cf6',
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: { duration: 1200, easing: 'easeOutCubic' },
+        plugins: {
+          legend: { display: true, labels: { font: { size: 14 }, color: '#5b21b6' } },
+          tooltip: { enabled: true }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: 'Job Title', font: { size: 16, weight: 'bold' }, color: '#374151' },
+            ticks: { font: { size: 12 }, color: '#4b5563', maxRotation: 45, minRotation: 30 },
+            grid: { display: false }
+          },
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 'Applications', font: { size: 16, weight: 'bold' }, color: '#374151' },
+            ticks: { font: { size: 12 }, color: '#4b5563', stepSize: 1 },
+            grid: { color: '#e5e7eb' }
+          }
+        }
+      }
+    });
+
+    const jobsPostedCount = postingDates.reduce((acc, d) => {
+      acc[d] = (acc[d] || 0) + 1;
+      return acc;
+    }, {});
+
+    new Chart(document.getElementById('jobPostingTimelineChart'), {
+      type: 'line',
+      data: {
+        labels: Object.keys(jobsPostedCount),
+        datasets: [{
+          label: 'Jobs Posted Over Time',
+          data: Object.values(jobsPostedCount),
+          borderColor: '#059669',
+          backgroundColor: 'rgba(5, 150, 105, 0.3)',
+          fill: true,
+          tension: 0.3,
+          borderWidth: 3,
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          pointBackgroundColor: '#065f46',
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: { duration: 1200, easing: 'easeOutQuint' },
+        plugins: {
+          legend: { display: true, labels: { font: { size: 14 }, color: '#065f46' } },
+          tooltip: { enabled: true, mode: 'nearest', intersect: false }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: 'Date', font: { size: 16, weight: 'bold' }, color: '#374151' },
+            ticks: { font: { size: 12 }, color: '#4b5563', maxRotation: 45, minRotation: 30 },
+            grid: { display: false }
+          },
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 'Jobs Posted', font: { size: 16, weight: 'bold' }, color: '#374151' },
+            ticks: { font: { size: 12 }, color: '#4b5563', stepSize: 1 },
+            grid: { color: '#e5e7eb' }
+          }
+        }
+      }
+    });
+
+  {% endif %}
+});
+</script>
+
+{% endblock %}

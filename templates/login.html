@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<div class="min-h-screen flex items-center justify-center bg-[#E0FBE2] px-4">
+  <div class="w-full max-w-sm animate__animated animate__fadeIn">
+
+    <!-- Compact Login Card -->
+    <div class="bg-white border border-[#B0EBB4] rounded-3xl shadow-xl px-6 py-6 sm:px-6 sm:py-6 max-h-[85vh]">
+      <form method="POST" action="" class="space-y-3">
+        <h2 class="text-2xl font-bold text-green-700 text-center mb-2 drop-shadow-sm">Login</h2>
+
+        {% set field_classes = "w-full px-4 py-2 border border-[#ACE1AF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B0EBB4] focus:border-[#ACE1AF] transition shadow-sm text-sm" %}
+
+        <!-- User Type -->
+        <div>
+          <label for="usertype" class="block text-green-700 font-medium mb-1 uppercase tracking-wide text-sm">User Type</label>
+          <select id="usertype" name="usertype" required class="{{ field_classes }}">
+            <option value="">Select User Type</option>
+            <option value="Job_Seeker" {% if request.form.get('usertype') == 'Job_Seeker' %}selected{% endif %}>Job Seeker</option>
+            <option value="Company" {% if request.form.get('usertype') == 'Company' %}selected{% endif %}>Company</option>
+          </select>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label for="email" class="block text-green-700 font-medium mb-1 uppercase tracking-wide text-sm">Email</label>
+          <input id="email" name="email" type="email" required
+                 value="{{ request.form.get('email', '') }}"
+                 class="{{ field_classes }}"
+                 placeholder="you@example.com">
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label for="password" class="block text-green-700 font-medium mb-1 uppercase tracking-wide text-sm">Password</label>
+          <input id="password" name="password" type="password" required
+                 class="{{ field_classes }}"
+                 placeholder="Enter password">
+        </div>
+
+        <!-- Remember Me -->
+        <div class="flex items-center space-x-2">
+          <input id="remember" name="remember" type="checkbox"
+                 {% if request.form.get('remember') %}checked{% endif %}
+                 class="rounded border-[#ACE1AF] focus:ring-[#B0EBB4]">
+          <label for="remember" class="text-sm text-gray-700">Remember Me</label>
+        </div>
+
+        <!-- Forgot Password -->
+        <div class="text-end">
+          <a href="{{ url_for('forgot_password') }}" class="text-green-600 hover:text-green-800 font-medium text-sm underline">Forgot Password?</a>
+        </div>
+
+        <!-- Submit -->
+        <div>
+          <button type="submit" class="w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full shadow-md transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#B0EBB4] text-sm">
+            Login
+          </button>
+        </div>
+      </form>
+
+      <!-- Link to Register -->
+      <p class="mt-4 text-center text-gray-700 font-medium text-sm">
+        Don’t have an account?
+        <a href="/register" class="text-green-600 hover:text-green-800 font-semibold underline transition">Register here</a>.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

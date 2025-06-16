@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="max-w-6xl mx-auto mt-12 px-4 font-sans animate__animated animate__fadeIn">
+
+  <!-- Page Heading -->
+  <h2 class="text-3xl font-extrabold text-green-700 text-center mb-8">
+    Your Posted Jobs
+  </h2>
+
+  {% if jobs %}
+    <div class="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      {% for job in jobs %}
+      <div class="bg-white border border-[#B0EBB4] rounded-2xl shadow-md p-6 flex flex-col justify-between hover:shadow-lg transition animate__animated animate__fadeInUp">
+
+        <div class="space-y-4">
+
+          <!-- Job Title Row -->
+          <div class="flex items-center justify-between">
+            <label class="text-sm font-semibold text-green-700">Job Title</label>
+            <p class="text-gray-800 text-sm font-medium">{{ job.title }}</p>
+          </div>
+
+          <!-- Industry and Status -->
+          <div>
+            <label class="block text-sm font-semibold text-green-700 mb-1">Industry & Status</label>
+            <div class="flex items-center justify-between">
+              <p class="text-sm text-gray-700">{{ job.industry }}</p>
+              {% if job.is_active %}
+<span class="text-xs font-bold text-white bg-emerald-600 px-3 py-1 rounded-full shadow-sm ring-1 ring-emerald-700">
+  Active
+</span>
+{% else %}
+<span class="text-xs font-bold text-white bg-red-500 px-3 py-1 rounded-full shadow-sm ring-1 ring-red-700">
+  Inactive
+</span>
+{% endif %}
+
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label class="block text-sm font-semibold text-green-700 mb-1">Description</label>
+            <p class="text-gray-700 text-sm leading-relaxed">
+              {{ job.description | truncate(150, True) }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-6 grid grid-cols-2 gap-3">
+          <a href="{{ url_for('job_detail', job_id=job.id) }}"
+             class="w-full text-center bg-green-600 hover:bg-green-700 text-white font-medium px-2.5 py-1.5 rounded-md text-xs shadow transition duration-300 animate__animated animate__pulse">
+            View Details
+          </a>
+          <a href="{{ url_for('view_applications', job_id=job.id) }}"
+             class="w-full text-center bg-green-600 hover:bg-green-700 text-white font-medium px-2.5 py-1.5 rounded-md text-xs shadow transition duration-300 animate__animated animate__pulse">
+            View Applications
+          </a>
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <!-- No Jobs Message -->
+    <div class="mt-10 text-center bg-[#E0FBE2] text-green-800 px-6 py-4 rounded-xl shadow">
+      You haven't posted any jobs yet.
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

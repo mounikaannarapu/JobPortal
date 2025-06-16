@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+{% block title %}Post a New Job{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<div class="min-h-screen flex items-center justify-center bg-[#E0FBE2] px-4">
+  <div class="w-full max-w-2xl animate__animated animate__fadeIn">
+
+    <div class="bg-white border border-[#B0EBB4] rounded-3xl shadow-xl px-6 py-8 sm:px-10">
+      <h2 class="text-2xl font-bold text-green-700 text-center mb-2 drop-shadow-sm">Post a New Job</h2>
+      <p class="text-center text-gray-600 mb-6 text-sm">Fill in the job details to attract top candidates.</p>
+
+      <form method="POST" action="{{ url_for('post_job') }}" class="space-y-4 text-sm text-gray-800">
+        {% set input_class = "w-full px-4 py-2 border border-[#ACE1AF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B0EBB4] focus:border-[#ACE1AF] transition shadow-sm" %}
+
+        <!-- Job Title -->
+        <div>
+          <label for="title" class="block text-green-700 font-medium mb-1">Job Title</label>
+          <input type="text" id="title" name="title" value="{{ title | default('') }}" required class="{{ input_class }}">
+        </div>
+
+        <!-- Industry -->
+        <div>
+          <label for="industry" class="block text-green-700 font-medium mb-1">Industry</label>
+          <input type="text" id="industry" name="industry" value="{{ industry | default('') }}" required class="{{ input_class }}">
+        </div>
+
+        <!-- Salary -->
+        <div>
+          <label for="salary" class="block text-green-700 font-medium mb-1">Salary</label>
+          <input type="text" id="salary" name="salary" value="{{ salary | default('') }}" class="{{ input_class }}">
+        </div>
+
+        <!-- Experience Required -->
+        <div>
+          <label for="experience_required" class="block text-green-700 font-medium mb-1">Experience Required (Years)</label>
+          <select id="experience_required" name="experience_required" required class="{{ input_class }}">
+            <option value="">Select years</option>
+            {% for i in range(0, 21) %}
+              <option value="{{ i }}" {% if experience_required|int == i %}selected{% endif %}>{{ i }} year{{ 's' if i != 1 }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Activation Start -->
+        <div>
+          <label for="activation_start" class="block text-green-700 font-medium mb-1">Activation Start Time</label>
+          <input type="datetime-local" id="activation_start" name="activation_start" required class="{{ input_class }}">
+        </div>
+
+        <!-- Activation End -->
+        <div>
+          <label for="activation_end" class="block text-green-700 font-medium mb-1">Activation End Time</label>
+          <input type="datetime-local" id="activation_end" name="activation_end" required class="{{ input_class }}">
+        </div>
+
+        <!-- Job Description -->
+        <div>
+          <label for="description" class="block text-green-700 font-medium mb-1">Job Description</label>
+          <textarea id="description" name="description" rows="5" required class="{{ input_class }}">{{ description | default('') }}</textarea>
+        </div>
+
+        <!-- Submit -->
+        <div class="text-center pt-4">
+          <button type="submit"
+            class="w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full shadow-md transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#B0EBB4]">
+            Post Job
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

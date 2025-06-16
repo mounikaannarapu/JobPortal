@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+{% block title %}Edit Job{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<div class="min-h-screen flex items-center justify-center bg-[#E0FBE2] px-4">
+  <div class="w-full max-w-2xl animate__animated animate__fadeIn">
+    <div class="bg-white border border-[#B0EBB4] rounded-3xl shadow-xl px-6 py-8 sm:px-10 sm:py-10">
+      <h2 class="text-3xl font-extrabold text-green-700 text-center mb-4 drop-shadow-sm">
+        Edit Job
+      </h2>
+      <p class="text-center text-gray-600 mb-6 text-sm">Make changes to the job details below and click Update.</p>
+
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="mb-4 space-y-2">
+            {% for category, message in messages %}
+              <div class="px-4 py-2 rounded-xl text-center font-medium text-sm
+                {% if category == 'danger' %}
+                  bg-red-100 text-red-800 border border-red-300
+                {% elif category == 'success' %}
+                  bg-green-100 text-green-800 border border-green-300
+                {% else %}
+                  bg-blue-100 text-blue-800 border border-blue-300
+                {% endif %}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" class="space-y-5 text-sm text-gray-800">
+        {% set input_class = "w-full px-4 py-3 border border-[#ACE1AF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B0EBB4] transition shadow-sm text-sm" %}
+
+        <div>
+          <label for="title" class="block text-green-700 font-medium mb-1">Job Title</label>
+          <input type="text" id="title" name="title" value="{{ request.form.title or job.title }}" class="{{ input_class }}" required>
+        </div>
+
+        <div>
+          <label for="industry" class="block text-green-700 font-medium mb-1">Industry</label>
+          <input type="text" id="industry" name="industry" value="{{ request.form.industry or job.industry }}" class="{{ input_class }}" required>
+        </div>
+
+        <div>
+          <label for="description" class="block text-green-700 font-medium mb-1">Job Description</label>
+          <textarea id="description" name="description" rows="5" class="{{ input_class }}" required>{{ request.form.description or job.description }}</textarea>
+        </div>
+
+        <div>
+          <label for="salary" class="block text-green-700 font-medium mb-1">Salary</label>
+          <input type="text" id="salary" name="salary" value="{{ request.form.salary or job.salary or '' }}" class="{{ input_class }}">
+        </div>
+
+        <div>
+          <label for="experience_required" class="block text-green-700 font-medium mb-1">Experience Required (Years)</label>
+          <select id="experience_required" name="experience_required" class="{{ input_class }}">
+            <option value="">Select</option>
+            {% set selected_exp = request.form.experience_required or job.experience_required|string %}
+            {% for i in range(0, 21) %}
+              <option value="{{ i }}" {% if selected_exp == i|string %}selected{% endif %}>{{ i }} year{{ 's' if i != 1 }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label for="activation_start" class="block text-green-700 font-medium mb-1">Activation Start Time</label>
+          <input type="datetime-local" id="activation_start" name="activation_start"
+                 value="{{ request.form.activation_start or (job.activation_start.strftime('%Y-%m-%dT%H:%M') if job.activation_start else '') }}"
+                 class="{{ input_class }}" required>
+        </div>
+
+        <div>
+          <label for="activation_end" class="block text-green-700 font-medium mb-1">Activation End Time</label>
+          <input type="datetime-local" id="activation_end" name="activation_end"
+                 value="{{ request.form.activation_end or (job.activation_end.strftime('%Y-%m-%dT%H:%M') if job.activation_end else '') }}"
+                 class="{{ input_class }}" required>
+        </div>
+
+        <div class="pt-4 text-center">
+          <button type="submit" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full shadow-md transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#B0EBB4]">
+            Update Job
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-[#E0FBE2] px-4 sm:px-6 py-12 font-sans">
+
+  <!-- Page Header -->
+  <div class="text-center mb-10 animate__animated animate__fadeInDown">
+    <h1 class="text-3xl sm:text-4xl font-extrabold text-green-700 mb-2 drop-shadow-sm">
+      Job Listings
+    </h1>
+    <p class="text-gray-700 text-base sm:text-lg max-w-2xl mx-auto">
+      Browse through available job openings and apply with a single click.
+    </p>
+  </div>
+
+  <!-- Job Cards -->
+  {% if jobs %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for job in jobs %}
+        <div class="bg-white border border-[#ACE1AF] rounded-2xl shadow-md p-6 flex flex-col justify-between hover:shadow-lg hover:-translate-y-1.5 transition duration-300 animate__animated animate__fadeInUp">
+
+          <!-- Job Info -->
+          <div class="mb-4">
+            <p class="text-green-600 font-semibold text-sm mb-1">
+              <i class="bi bi-building mr-1"></i> Industry: {{ job.industry }}
+            </p>
+            <h2 class="text-xl font-bold text-gray-900 mb-1">{{ job.title }}</h2>
+            <p class="text-xs text-gray-500 mb-2">
+              <i class="bi bi-calendar2-week mr-1"></i> Posted: {{ job.date_posted.strftime('%Y-%m-%d') }}
+            </p>
+            <p class="text-gray-700 text-sm leading-snug line-clamp-4">{{ job.description }}</p>
+          </div>
+
+          <!-- Action Button -->
+          <div class="mt-4 text-center">
+            {% if current_user.is_authenticated %}
+              {% if current_user.usertype == 'Company' %}
+                <a href="{{ url_for('view_applications', job_id=job.id) }}"
+                   class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-5 rounded-full shadow-md transform hover:scale-105 transition">
+                  <i class="bi bi-people-fill mr-2"></i> View Applications
+                </a>
+              {% elif current_user.usertype == 'Job_Seeker' %}
+                <a href="{{ url_for('post_cvs', job_id=job.id) }}"
+                   class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-5 rounded-full shadow-md transform hover:scale-105 transition">
+                  <i class="bi bi-send-check mr-2"></i> Apply
+                </a>
+              {% endif %}
+            {% else %}
+              <a href="{{ url_for('login_with_message', next=request.path) }}"
+                 class="inline-flex items-center justify-center bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-5 rounded-full shadow-md transform hover:scale-105 transition">
+                <i class="bi bi-box-arrow-in-right mr-2"></i> Login to Apply
+              </a>
+            {% endif %}
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <!-- No Jobs Message -->
+    <div class="text-center py-20 bg-green-100 border border-green-300 text-green-800 rounded-xl font-medium text-lg shadow-sm">
+      <i class="bi bi-info-circle-fill inline-block mr-2 text-2xl align-middle"></i>
+      No jobs available at the moment.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

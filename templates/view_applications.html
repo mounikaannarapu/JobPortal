@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-10">
+  {% if applications %}
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-2xl font-semibold text-gray-800">Applications</h2>
+    <div class="space-x-3">
+      <button onclick="downloadExcel()" class="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-full shadow transition">
+        Download Excel
+      </button>
+      <button onclick="downloadPDF()" class="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-full shadow transition">
+        Download PDF
+      </button>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto rounded-lg shadow">
+    <table id="applicationsTable" class="min-w-full bg-white border border-gray-200 text-sm">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="py-2 px-4 border-b">Name</th>
+          <th class="py-2 px-4 border-b">Industry</th>
+          <th class="py-2 px-4 border-b">Degree</th>
+          <th class="py-2 px-4 border-b">Experience</th>
+          <th class="py-2 px-4 border-b">College</th>
+          <th class="py-2 px-4 border-b">Percentage</th>
+          <th class="py-2 px-4 border-b">Applied On</th>
+          <th class="py-2 px-4 border-b">Cover Letter</th>
+          <th class="py-2 px-4 border-b">Resume/CV</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-800">
+        {% for application in applications %}
+        <tr class="hover:bg-gray-50 transition">
+          <td class="py-2 px-4 border-b">{{ application.applicant_name }}</td>
+          <td class="py-2 px-4 border-b">{{ application.industry }}</td>
+          <td class="py-2 px-4 border-b">{{ application.degree }}</td>
+          <td class="py-2 px-4 border-b">{{ application.experience }} years</td>
+          <td class="py-2 px-4 border-b">{{ application.college_name }}</td>
+          <td class="py-2 px-4 border-b">{{ application.percentage }}%</td>
+          <td class="py-2 px-4 border-b">{{ application.date_posted.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+          <td class="py-2 px-4 border-b whitespace-pre-line max-w-xs">{{ application.cover_letter }}</td>
+          <td class="py-2 px-4 border-b text-center">
+            {% if application.cv %}
+            <a href="{{ url_for('uploaded_file', filename=application.cv) }}" target="_blank"
+               class="text-indigo-600 hover:underline">View CV</a>
+            {% else %}
+            <span class="text-gray-400 italic">None</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-center text-gray-500">No applications found for this job.</p>
+  {% endif %}
+</div>
+
+<!-- JS for Excel & PDF Download -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  function downloadExcel() {
+    const wb = XLSX.utils.table_to_book(document.getElementById('applicationsTable'), { sheet: "Applications" });
+    XLSX.writeFile(wb, 'applications.xlsx');
+  }
+
+  async function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('l', 'pt', 'a4');
+
+    await doc.html(document.getElementById('applicationsTable'), {
+      callback: function (doc) {
+        doc.save('applications.pdf');
+      },
+      x: 10,
+      y: 10
+    });
+  }
+</script>
+
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<div class="min-h-screen flex items-center justify-center bg-[#E0FBE2] px-4">
+  <div class="w-full max-w-lg animate__animated animate__fadeInUp">
+
+    <div class="bg-white border border-[#B0EBB4] rounded-3xl shadow-xl px-6 py-6 sm:px-8 sm:py-8">
+      <h2 class="text-2xl font-bold text-green-700 text-center mb-2 drop-shadow-sm">Edit Profile</h2>
+      <p class="text-center text-gray-600 mb-5 text-sm">Keep your profile up-to-date to receive relevant job opportunities.</p>
+
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="mb-4 space-y-2">
+            {% for category, message in messages %}
+              <div class="px-4 py-2 rounded-xl text-center font-medium text-sm
+                {% if category == 'danger' %}
+                  bg-red-100 text-red-800 border border-red-300
+                {% elif category == 'success' %}
+                  bg-green-100 text-green-800 border border-green-300
+                {% else %}
+                  bg-blue-100 text-blue-800 border border-blue-300
+                {% endif %}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <!-- Form -->
+      <form method="POST" action="{{ url_for('edit_profile') }}" class="space-y-4 text-sm text-gray-800">
+        {% if csrf is defined %}
+          {{ csrf.csrf_token() }}
+        {% endif %}
+
+        {% set input_class = "w-full px-4 py-2 border border-[#ACE1AF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B0EBB4] focus:border-[#ACE1AF] transition shadow-sm text-sm" %}
+
+        <!-- Full Name -->
+        <div>
+          <label for="username" class="block text-green-700 font-medium mb-1">Full Name</label>
+          <input type="text" id="username" name="username" value="{{ user.username }}" required class="{{ input_class }}">
+        </div>
+
+        <!-- Email (Read-only) -->
+        <div>
+          <label for="email" class="block text-green-700 font-medium mb-1">Email</label>
+          <input type="email" id="email" value="{{ user.email }}" readonly class="bg-gray-100 cursor-not-allowed {{ input_class }}">
+        </div>
+
+        <!-- Contact -->
+        <div>
+          <label for="contact" class="block text-green-700 font-medium mb-1">Contact</label>
+          <input type="text" id="contact" name="contact" value="{{ user.contact or '' }}" class="{{ input_class }}">
+        </div>
+
+        <!-- Gender -->
+        <div>
+          <label for="gender" class="block text-green-700 font-medium mb-1">Gender</label>
+          <select id="gender" name="gender" required class="{{ input_class }}">
+            <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
+            <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
+            <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
+          </select>
+        </div>
+
+        <!-- Submit -->
+        <div class="pt-4">
+          <button type="submit" class="w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full shadow-md transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#B0EBB4]">
+            Update Profile
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

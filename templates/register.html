@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<div class="min-h-screen flex items-center justify-center bg-[#E0FBE2] px-2 py-6">
+  <div class="w-full max-w-md animate__animated animate__fadeIn">
+
+    <!-- Registration Form Card -->
+    <div class="bg-white border border-[#B0EBB4] rounded-2xl shadow-md px-6 py-8 transition-transform transform hover:scale-[1.01] duration-500 ease-in-out">
+      <h2 class="text-2xl font-bold text-green-700 text-center mb-2">Create Account</h2>
+      <p class="text-sm text-gray-600 text-center mb-4">Join us to find or post jobs.</p>
+
+      <form method="POST" action="/register" class="space-y-4">
+        {% set field_classes = "w-full px-4 py-2 border border-[#ACE1AF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B0EBB4] focus:border-[#ACE1AF] text-sm transition shadow-sm" %}
+        {% set select_classes = field_classes + " appearance-none bg-[#F0FFF4] text-[#166534]" %}
+
+        <input id="name" name="name" required class="{{ field_classes }}" placeholder="Full Name">
+        <input id="contact" name="contact" type="tel" required class="{{ field_classes }}" placeholder="Contact Number">
+
+        <select id="gender" name="gender" required class="{{ select_classes }}">
+          <option value="" disabled selected>Select Gender</option>
+          <option class="bg-[#E0FBE2] text-[#166534]">Male</option>
+          <option class="bg-[#E0FBE2] text-[#166534]">Female</option>
+          <option class="bg-[#E0FBE2] text-[#166534]">Other</option>
+        </select>
+
+        <input id="email" name="email" type="email" required class="{{ field_classes }}" placeholder="Email Address">
+        <input id="password" name="password" type="password" required class="{{ field_classes }}" placeholder="Password">
+        <input id="confirm_password" name="confirm_password" type="password" required class="{{ field_classes }}" placeholder="Confirm Password">
+
+        <select id="role" name="role" required class="{{ select_classes }}">
+          <option value="" disabled selected>Select Role</option>
+          <option value="Job_Seeker" class="bg-[#E0FBE2] text-[#166534]">Job Seeker</option>
+          <option value="Company" class="bg-[#E0FBE2] text-[#166534]">Company</option>
+        </select>
+
+        <button type="submit" class="w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full shadow-md transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#B0EBB4]">
+          Send OTP
+        </button>
+      </form>
+
+      <p class="mt-4 text-center text-gray-700 text-sm">
+        Already have an account?
+        <a href="/login" class="text-green-600 hover:text-green-800 font-semibold underline">Login here</a>.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

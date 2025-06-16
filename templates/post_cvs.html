@@ -1,0 +1,136 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 font-sans text-gray-900">
+
+  <!-- Header -->
+  <div class="text-center mb-12 animate-fade-in">
+  <h1 class="text-3xl font-bold tracking-tight text-green-700">
+    {{ job.title }}
+  </h1>
+  <p class="text-gray-600 text-lg mt-2">Industry: <strong>{{ job.industry }}</strong></p>
+</div>
+
+  <!-- Solid Background Form -->
+  <form method="POST" action="{{ url_for('post_cvs', job_id=job.id) }}" enctype="multipart/form-data"
+        class="bg-white border border-green-300 rounded-3xl shadow-lg p-10 space-y-8 transition-all duration-500 ease-in-out animate-slide-in">
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      {% set input_classes = "form-input w-full px-4 py-3 rounded-2xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white text-gray-800 placeholder-gray-400 transition duration-300 ease-in-out hover:shadow-md" %}
+
+      <!-- Left Section -->
+      <div class="space-y-6 animate-slide-left">
+        <div>
+          <label class="block font-semibold text-gray-800">Applicant Name</label>
+          <input type="text" name="applicant_name" required class="{{ input_classes }}" />
+        </div>
+
+        <div>
+          <label class="block font-semibold text-gray-800">Email Address</label>
+          <input type="email" name="email" value="{{ current_user.email }}" readonly
+                 class="bg-gray-100 cursor-not-allowed {{ input_classes }}" />
+        </div>
+
+        <div>
+          <label class="block font-semibold text-gray-800">Contact Number</label>
+          <input type="text" name="contact" value="{{ current_user.contact }}" readonly
+                 class="bg-gray-100 cursor-not-allowed {{ input_classes }}" />
+        </div>
+
+        <div>
+          <label class="block font-semibold text-gray-800">Gender</label>
+          <select name="gender" required class="{{ input_classes }}">
+            <option value="" disabled selected>Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+            <option value="Prefer not to say">Prefer not to say</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-gray-800">College Name</label>
+          <input type="text" name="college_name" required class="{{ input_classes }}" />
+        </div>
+
+        <div>
+          <label class="block font-semibold text-gray-800">Degree</label>
+          <select name="degree" required class="{{ input_classes }}">
+            <option value="" disabled selected>Select Degree</option>
+            <option value="High School">High School</option>
+            <option value="Diploma">Diploma</option>
+            <option value="Bachelor's">Bachelor's</option>
+            <option value="Master's">Master's</option>
+            <option value="PhD">PhD</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-gray-800">Passout Year</label>
+          <select name="passout_year" required class="{{ input_classes }}">
+            <option value="" disabled selected>Select Year</option>
+            {% for year in range(1980, current_year + 1) %}
+              <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-gray-800">Percentage (%)</label>
+          <input type="number" name="percentage" step="0.01" required class="{{ input_classes }}" />
+        </div>
+      </div>
+
+      <!-- Right Section -->
+      <div class="space-y-6 animate-slide-right">
+        <div>
+          <label class="block font-semibold text-gray-800">Experience</label>
+          <input type="number" name="experience" required class="{{ input_classes }}" />
+        </div>
+
+        <div>
+          <label class="block font-semibold text-gray-800">Upload Resume (pdf, doc, docx)</label>
+          <input type="file" name="cv" accept=".pdf,.doc,.docx,.jpg,.png,.bmp" required
+                 class="file:bg-green-600 file:text-white file:rounded-xl file:px-4 file:py-2 file:cursor-pointer {{ input_classes }}" />
+        </div>
+
+        <div>
+          <label class="block font-semibold text-gray-800">Cover Letter</label>
+          <textarea name="cover_letter" rows="10" required
+                    class="w-full px-4 py-3 rounded-2xl border border-gray-300 bg-white text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-300 ease-in-out hover:shadow-md"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="text-center pt-6 animate-fade-in">
+      <button type="submit"
+              class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-10 rounded-full shadow-md transform transition-transform duration-300 hover:scale-105">
+        <i class="bi bi-send-fill mr-2"></i> Submit Application
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Custom Animations -->
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .animate-fade-in { animation: fadeIn 1s ease-out both; }
+  .animate-slide-left { animation: slideInLeft 1s ease-out both; }
+  .animate-slide-right { animation: slideInRight 1s ease-out both; }
+  .animate-slide-in { animation: fadeIn 1.2s ease-out both; }
+</style>
+{% endblock %}

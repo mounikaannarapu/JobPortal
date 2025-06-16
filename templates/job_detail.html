@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto my-14 px-6 sm:px-8 font-sans text-gray-800 dark:text-gray-100 animate__animated animate__fadeIn">
+
+  <!-- Page Header -->
+  <div class="mb-8 animate__animated animate__fadeInUp">
+    <h1 class="text-3xl font-extrabold text-green-700 text-center">
+      Job Details
+    </h1>
+  </div>
+
+  <!-- Job Info Card -->
+  <div class="bg-white dark:bg-gray-900 border border-green-200 dark:border-gray-700 rounded-2xl shadow-md p-6 mb-10 animate__animated animate__fadeInUp animate__delay-1s space-y-4">
+
+    <!-- Job Info Rows with centered colon -->
+    <div class="space-y-3">
+      {% set label_class = "w-40 font-semibold text-green-700" %}
+      {% set colon_class = "mx-2 text-green-600 font-semibold" %}
+      {% set value_class = "text-gray-800 dark:text-gray-200" %}
+
+      <div class="flex items-center">
+        <span class="{{ label_class }}">Job Title</span>
+        <span class="{{ colon_class }}">:</span>
+        <span class="{{ value_class }}">{{ job.title }}</span>
+      </div>
+
+      <div class="flex items-center">
+        <span class="{{ label_class }}">Industry</span>
+        <span class="{{ colon_class }}">:</span>
+        <span class="{{ value_class }}">{{ job.industry }}</span>
+      </div>
+
+      <div class="flex items-center">
+        <span class="{{ label_class }}">Posted On</span>
+        <span class="{{ colon_class }}">:</span>
+        <span class="{{ value_class }}">{{ job.date_posted.strftime('%B %d, %Y at %I:%M %p') }}</span>
+      </div>
+
+      <div class="flex items-center">
+        <span class="{{ label_class }}">Status</span>
+        <span class="{{ colon_class }}">:</span>
+        <span>
+          {% if job.is_active %}
+            <span class="text-xs font-bold text-white bg-emerald-600 px-3 py-1 rounded-full shadow-sm ring-1 ring-emerald-700">Active</span>
+          {% else %}
+            <span class="text-xs font-bold text-white bg-red-500 px-3 py-1 rounded-full shadow-sm ring-1 ring-red-700">Inactive</span>
+          {% endif %}
+        </span>
+      </div>
+
+      <div class="flex items-start">
+        <span class="{{ label_class }} pt-1">Description</span>
+        <span class="{{ colon_class }} pt-1">:</span>
+        <span class="{{ value_class }} whitespace-pre-line">{{ job.description }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back Button -->
+  <div class="text-center">
+    {% if current_user.is_authenticated %}
+      {% if current_user.usertype == 'Company' %}
+        <a href="{{ url_for('posted_jobs') }}"
+           class="inline-block bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-2 rounded-md text-sm shadow transition duration-300">
+          Back to Posted Jobs
+        </a>
+      {% else %}
+        <a href="{{ url_for('show_jobs') }}"
+           class="inline-block bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-2 rounded-md text-sm shadow transition duration-300">
+          Back to Jobs
+        </a>
+      {% endif %}
+    {% else %}
+      <a href="{{ url_for('show_jobs') }}"
+         class="inline-block bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-2 rounded-md text-sm shadow transition duration-300">
+        Back to Jobs
+      </a>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

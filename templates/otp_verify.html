@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+
+{% block title %}OTP Verification{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<div class="w-full max-w-md mx-auto mt-16 animate__animated animate__fadeInUp">
+
+  <!-- OTP Card -->
+  <div class="bg-white border border-[#B0EBB4] rounded-3xl shadow-xl px-6 py-8 transition-transform transform hover:scale-[1.01] duration-500 ease-in-out">
+
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-center text-green-700 mb-4 drop-shadow-sm">Verify Your Email</h2>
+
+    <!-- Form -->
+    <form method="POST" action="{{ url_for('otp_verify') }}" class="space-y-5 text-sm">
+      <div>
+        <label for="otp" class="block text-green-700 font-medium mb-1 uppercase tracking-wide">Enter the OTP</label>
+        <input type="text" name="otp" id="otp" required maxlength="6"
+               class="w-full px-4 py-2 border border-[#ACE1AF] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#B0EBB4] focus:border-[#ACE1AF] transition shadow-sm"
+               placeholder="6-digit OTP" />
+      </div>
+
+      <button type="submit"
+              class="w-full py-2 bg-green-600 hover:bg-green-700 text-white font-semibold text-sm rounded-full shadow-md transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#B0EBB4]">
+        Verify OTP
+      </button>
+    </form>
+
+    <!-- Resend OTP -->
+    <p class="mt-5 text-center text-sm text-gray-700 font-medium">
+      Didn’t receive the OTP?
+      <a href="#" id="resend-link"
+         class="text-green-600 font-semibold pointer-events-none opacity-50">
+        Resend OTP (<span id="countdown">60</span>s)
+      </a>
+    </p>
+  </div>
+</div>
+
+<script>
+  const resendLink = document.getElementById('resend-link');
+  const countdownEl = document.getElementById('countdown');
+  let timeLeft = 60;
+
+  const timer = setInterval(() => {
+    timeLeft--;
+    countdownEl.textContent = timeLeft;
+
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      resendLink.textContent = 'Resend OTP';
+      resendLink.classList.remove('pointer-events-none', 'opacity-50');
+      resendLink.classList.add('hover:underline');
+      resendLink.href = "{{ url_for('resend_otp') }}";
+    }
+  }, 1000);
+</script>
+{% endblock %}

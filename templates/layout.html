@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Job Portal{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    .font-poppins { font-family: 'Poppins', sans-serif; }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body class="bg-[#E0FBE2] text-[#34495E] font-poppins transition-colors duration-300">
+
+  <!-- Navbar -->
+  <header class="bg-[#ACE1AF] text-[#34495E] shadow-md fixed top-0 w-full z-50">
+    <nav class="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
+
+      <!-- Left section -->
+      <div class="flex items-center space-x-4">
+        <a href="{% if current_user.is_authenticated and current_user.usertype == 'Company' %}
+                   {{ url_for('posted_jobs') }}
+                 {% else %}
+                   {{ url_for('job_portal') }}
+                 {% endif %}"
+           class="text-2xl font-bold hover:text-[#34495E] tracking-wide whitespace-nowrap">
+          Job Portal
+        </a>
+        {% if current_user.is_authenticated %}
+          <span class="font-semibold bg-[#BFF6C3] px-3 py-1 rounded-full whitespace-nowrap">
+            Welcome, {{ current_user.username }}
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- Right section -->
+      <div class="relative flex items-center space-x-4 whitespace-nowrap">
+
+        <!-- Nav links -->
+        <ul class="flex items-center space-x-4">
+          {% if current_user.is_authenticated %}
+            <li>
+              <a href="{{ url_for('home') }}"
+                 class="px-3 py-2 rounded-lg hover:bg-[#BFF6C3] {% if request.path == url_for('home') %} bg-[#BFF6C3] font-semibold {% endif %}">
+                Home
+              </a>
+            </li>
+            <li>
+              <a href="{{ url_for('analytics') }}"
+                 class="px-3 py-2 rounded-lg hover:bg-[#BFF6C3] {% if request.path == url_for('analytics') %} bg-[#BFF6C3] font-semibold {% endif %}">
+                Analytics
+              </a>
+            </li>
+            <li>
+              <a href="{{ url_for('contact') }}"
+                 class="px-3 py-2 rounded-lg hover:bg-[#BFF6C3] {% if request.path == url_for('contact') %} bg-[#BFF6C3] font-semibold {% endif %}">
+                Contact
+              </a>
+            </li>
+          {% endif %}
+
+          <!-- Always visible links -->
+          <li>
+            <a href="{{ url_for('about') }}"
+               class="px-3 py-2 rounded-lg hover:bg-[#BFF6C3] {% if request.path == url_for('about') %} bg-[#BFF6C3] font-semibold {% endif %}">
+              About
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('help') }}"
+               class="px-3 py-2 rounded-lg hover:bg-[#BFF6C3] {% if request.path == url_for('help') %} bg-[#BFF6C3] font-semibold {% endif %}">
+              Help
+            </a>
+          </li>
+        </ul>
+
+        <!-- Search -->
+        <form method="GET" action="{{ url_for('search_jobs') }}" class="flex">
+          <input type="text" name="search" value="{{ request.args.get('search', '') }}"
+                 placeholder="Search jobs..."
+                 class="px-4 py-2 rounded-l-full border border-[#ACE1AF] bg-[#E0FBE2] dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-[#BFF6C3] shadow-sm text-sm w-48 lg:w-64">
+          <button type="submit"
+                  class="px-4 py-2 bg-[#B0EBB4] text-[#34495E] font-medium rounded-r-full hover:bg-[#BFF6C3] text-sm transition-all dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
+            Search
+          </button>
+        </form>
+
+        <!-- Profile or Auth -->
+        {% if current_user.is_authenticated %}
+          <div class="relative">
+            <button id="profileDropdownBtn" class="px-3 py-2 rounded-lg flex items-center focus:outline-none hover:bg-[#BFF6C3]">
+              <i class="bi bi-person-circle text-xl"></i>
+            </button>
+            <div id="profileDropdown" class="hidden absolute top-full right-0 mt-2 w-40 bg-[#B0EBB4] rounded-md shadow-lg z-50">
+              <a href="{{ url_for('profile') }}" class="block px-4 py-2 hover:bg-[#ACE1AF]">Profile</a>
+              <a href="{{ url_for('logout') }}" class="block px-4 py-2 hover:bg-[#ACE1AF]">Log Out</a>
+            </div>
+          </div>
+        {% else %}
+          <div class="flex items-center space-x-2">
+            <a href="{{ url_for('login') }}" class="px-3 py-2 rounded-lg bg-[#B0EBB4] hover:bg-[#BFF6C3] text-sm font-medium shadow">Log In</a>
+            <a href="{{ url_for('register') }}" class="px-3 py-2 rounded-lg bg-[#B0EBB4] hover:bg-[#ACE1AF] text-sm font-medium shadow">Sign Up</a>
+          </div>
+        {% endif %}
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="pt-24 max-w-6xl mx-auto px-6">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div id="flash-messages" class="space-y-3 mb-6">
+          {% for category, msg in messages %}
+            <div class="px-6 py-3 rounded-lg 
+              {% if category == 'error' %} bg-[#FFDDDD] text-[#A94442]
+              {% elif category == 'success' %} bg-[#C7F9CC] text-[#146356]
+              {% elif category == 'warning' %} bg-[#FFF3CD] text-[#856404]
+              {% else %} bg-[#F8F3D4] text-[#6C584C] {% endif %}">
+              {{ msg }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if current_user.is_authenticated and current_user.usertype == 'Company' and request.path == url_for('home') %}
+      <div class="text-right mb-6">
+        <a href="{{ url_for('post_job') }}" class="bg-[#A8E6A1] px-6 py-2 rounded-full shadow font-semibold text-green-900 hover:bg-[#94D68C] transition">
+          + Create Job
+        </a>
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Scripts -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const profileBtn = document.getElementById('profileDropdownBtn');
+      const profileDropdown = document.getElementById('profileDropdown');
+
+      if (profileBtn && profileDropdown) {
+        profileBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          profileDropdown.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!profileDropdown.contains(e.target)) {
+            profileDropdown.classList.add('hidden');
+          }
+        });
+      }
+
+      // Auto-dismiss flash messages
+      setTimeout(() => {
+        const msg = document.getElementById('flash-messages');
+        if (msg) {
+          msg.style.opacity = 0;
+          setTimeout(() => msg.remove(), 500);
+        }
+      }, 3000);
+    });
+  </script>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>
